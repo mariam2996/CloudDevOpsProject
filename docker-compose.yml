@@ -1,0 +1,71 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ivolve-mysql
+    environment:
+      MYSQL_DATABASE: ivolve
+      MYSQL_USER: ibrahim
+      MYSQL_PASSWORD: pass@123
+      MYSQL_ROOT_PASSWORD: root123
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ivolve-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: ivolve-auth
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ivolve
+      DB_USER: ibrahim
+      DB_PASSWORD: pass@123
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ivolve-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  roadmap-service:
+    build:
+      context: ./roadmap-service
+    container_name: ivolve-roadmap
+    networks:
+      - ivolve-network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ivolve-frontend
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:5000
+      ROADMAP_SERVICE_URL: http://roadmap-service:8080
+      SESSION_SECRET: local-dev-secret
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      roadmap-service:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    networks:
+      - ivolve-network
+
+volumes:
+  mysql_data:
+
+networks:
+  ivolve-network:
+    driver: bridge
