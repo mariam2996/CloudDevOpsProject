@@ -60,19 +60,28 @@ def call(Map config = [:]) {
                 }
             }
 
-            stage('Push Manifests') {
+                        stage('Push Manifests') {
                 steps {
-                    sh '''
-                        git config user.name "jenkins"
-                        git config user.email "jenkins@local"
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'github-pat',
+                            usernameVariable: 'GIT_USERNAME',
+                            passwordVariable: 'GIT_TOKEN'
+                        )
+                    ]) {
+                        sh '''
+                            git config user.name "jenkins"
+                            git config user.email "jenkins@local"
 
-                        git add ${MANIFEST_PATH}
+                            git add ${MANIFEST_PATH}
 
-                        git diff --cached --quiet || \
-                          git commit -m "Update ${IMAGE_NAME} image to build ${IMAGE_TAG}"
+                            git diff --cached --quiet || \
+                              git commit -m "Update ${IMAGE_NAME} image to build ${IMAGE_TAG}"
 
-                        git push origin HEAD:main
-                    '''
+                            set +x
+                            git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/mariam2996/CloudDevOpsProject.git HEAD:main
+                        '''
+                    }
                 }
             }
         }
