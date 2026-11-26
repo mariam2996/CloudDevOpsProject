@@ -3,3 +3,50 @@
   ansible.builtin.dnf:
     name: docker
     state: present
+
+- name: Configure Floci registry as insecure registry
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    mode: "0644"
+    content: |
+      {
+        "insecure-registries": [
+          "floci-aws-ecr-registry:5000"
+        ]
+      }
+  register: docker_config
+
+- name: Check if Docker daemon is running
+  ansible.builtin.shell: pgrep -x dockerd
+  register: docker_daemon
+  changed_when: false
+  failed_when: false
+
+- name: Start Docker daemon manually for Floci environment
+  ansible.builtin.shell: >
+    nohup /usr/bin/dockerd
+    > /var/log/dockerd.log 2>&1
+    < /dev/null &
+  when: docker_daemon.rc != 0
+
+- name: Restart Docker daemon when configuration changes
+  ansible.builtin.shell: |
+    pkill -x dockerd || true
+    sleep 2
+    nohup /usr/bin/dockerd > /var/log/dockerd.log 2>&1 < /dev/null &
+    sleep 3
+  when: docker_config.changed
+
+- name: Add Jenkins user to Docker group
+  ansible.builtin.user:
+    name: jenkins
+    groups: docker
+    append: true
+  register: jenkins_docker_group
+
+- name: Restart Jenkins to apply Docker group membership
+  ansible.builtin.shell: |
+    pkill -u jenkins -f "jenkins.war" || true
+    sleep 2
+    su -s /bin/sh jenkins -c 'nohup java -jar /usr/share/java/jenkins.war --httpPort=8080 > /var/lib/jenkins/jenkins.log 2>&1 < /dev/null &'
+  when: jenkins_docker_group.changed

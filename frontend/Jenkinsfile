@@ -1,0 +1,7 @@
+@Library('ivolve-shared-library') _
+
+microservicePipeline(
+    imageName: 'clouddevopsproject-frontend',
+    serviceDir: 'frontend',
+    manifestPath: 'k8s/frontend/deployment.yaml'
+)

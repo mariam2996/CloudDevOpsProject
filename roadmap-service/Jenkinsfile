@@ -1,0 +1,7 @@
+@Library('ivolve-shared-library') _
+
+microservicePipeline(
+    imageName: 'clouddevopsproject-roadmap-service',
+    serviceDir: 'roadmap-service',
+    manifestPath: 'k8s/roadmap/deployment.yaml'
+)

@@ -1,0 +1,7 @@
+@Library('ivolve-shared-library') _
+
+microservicePipeline(
+    imageName: 'clouddevopsproject-auth-service',
+    serviceDir: 'auth-service',
+    manifestPath: 'k8s/auth/deployment.yaml'
+)
