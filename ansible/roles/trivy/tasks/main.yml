@@ -1,0 +1,17 @@
+---
+- name: Configure Trivy repository
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/trivy.repo
+    mode: "0644"
+    content: |
+      [trivy]
+      name=Trivy repository
+      baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$basearch/
+      gpgcheck=1
+      enabled=1
+      gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
+
+- name: Install Trivy
+  ansible.builtin.dnf:
+    name: trivy
+    state: present

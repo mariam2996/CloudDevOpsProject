@@ -25,3 +25,8 @@ variable "ami_id" {
   type        = string
   default     = "ami-ami-amazonlinux2023"
 }
+
+variable "public_key" {
+  description = "SSH public key for Jenkins EC2"
+  type        = string
+}

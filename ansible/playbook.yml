@@ -1,0 +1,10 @@
+---
+- name: Configure Jenkins server
+  hosts: jenkins
+  become: true
+
+  roles:
+    - java
+    - jenkins
+    - docker  
+    - trivy

@@ -1,0 +1,31 @@
+---
+- name: Add Jenkins repository
+  ansible.builtin.get_url:
+    url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    dest: /etc/yum.repos.d/jenkins.repo
+    mode: "0644"
+
+- name: Import Jenkins repository key
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+- name: Install Jenkins
+  ansible.builtin.dnf:
+    name: jenkins
+    state: present
+
+- name: Check if Jenkins is already running
+  ansible.builtin.shell: pgrep -f "jenkins.war"
+  register: jenkins_process
+  changed_when: false
+  failed_when: false
+
+- name: Start Jenkins manually for Floci environment
+  ansible.builtin.shell: >
+    su -s /bin/sh jenkins -c
+    'nohup java -jar /usr/share/java/jenkins.war
+    --httpPort=8080
+    > /var/lib/jenkins/jenkins.log 2>&1
+    < /dev/null &'
+  when: jenkins_process.rc != 0

@@ -1,0 +1,19 @@
+---
+plugin: amazon.aws.aws_ec2
+
+regions:
+  - us-east-1
+
+endpoint_url: http://127.0.0.1:4566
+
+filters:
+  instance-state-name: running
+  tag:Name: CloudDevOpsProject-jenkins
+
+hostnames:
+  - tag:Name
+
+groups:
+  jenkins: ec2_tags.Name == 'CloudDevOpsProject-jenkins'
+
+strict: false

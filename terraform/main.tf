@@ -12,6 +12,7 @@ module "server" {
   project_name = "CloudDevOpsProject"
   vpc_id       = module.network.vpc_id
   subnet_id    = module.network.public_subnet_ids[0]
+  public_key   = file("${path.root}/../keys/jenkins_ansible.pub")
 }
 
 module "ecr" {

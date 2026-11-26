@@ -32,8 +32,14 @@ resource "aws_security_group" "jenkins" {
   }
 }
 
+resource "aws_key_pair" "jenkins" {
+  key_name   = "${var.project_name}-jenkins-key"
+  public_key = var.public_key
+}
+
 resource "aws_instance" "jenkins" {
   ami                    = var.ami_id
+  key_name = aws_key_pair.jenkins.key_name
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.jenkins.id]
