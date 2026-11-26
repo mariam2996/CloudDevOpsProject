@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: clouddevopsproject-frontend:latest
+          image: floci-aws-ecr-registry:5000/clouddevopsproject-frontend:3
           ports:
             - containerPort: 3000
 
