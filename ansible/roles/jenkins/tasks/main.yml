@@ -15,6 +15,11 @@
     name: jenkins
     state: present
 
+- name: Install Git
+  ansible.builtin.dnf:
+    name: git
+    state: present
+
 - name: Check if Jenkins is already running
   ansible.builtin.shell: pgrep -f "jenkins.war"
   register: jenkins_process
