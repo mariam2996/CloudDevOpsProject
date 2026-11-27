@@ -3,5 +3,6 @@
 microservicePipeline(
     imageName: 'clouddevopsproject-roadmap-service',
     serviceDir: 'roadmap-service',
-    manifestPath: 'k8s/roadmap/deployment.yaml'
+    manifestPath: 'k8s/roadmap/deployment.yaml',
+    trivyPkgTypes: 'os'
 )

@@ -8,6 +8,7 @@ def call(Map config = [:]) {
             SERVICE_DIR = "${config.serviceDir}"
             MANIFEST_PATH = "${config.manifestPath}"
             IMAGE_TAG = "${BUILD_NUMBER}"
+            TRIVY_PKG_TYPES = "${config.trivyPkgTypes ?: 'os,library'}"
         }
 
         stages {
@@ -19,18 +20,18 @@ def call(Map config = [:]) {
                           ${SERVICE_DIR}
                     '''
                 }
-            }
-
-            stage('Scan') {
-                steps {
-                    sh '''
-                        trivy image \
-                          --exit-code 0 \
-                          --severity HIGH,CRITICAL \
-                          ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
-                    '''
-                }
-            }
+            
+          stage('Scan') {
+               steps {
+                   sh '''
+                         trivy image \
+                           --exit-code 0 \
+                           --severity HIGH,CRITICAL \
+                           --pkg-types ${TRIVY_PKG_TYPES} \
+                           ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+                        '''
+                       }
+                     }
 
             stage('Push') {
                 steps {
