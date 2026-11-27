@@ -20,6 +20,7 @@ def call(Map config = [:]) {
                           ${SERVICE_DIR}
                     '''
                 }
+             }
             
           stage('Scan') {
                steps {
