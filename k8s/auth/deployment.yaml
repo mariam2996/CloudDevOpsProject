@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: clouddevopsproject-auth-service:latest
+          image: floci-aws-ecr-registry:5000/clouddevopsproject-auth-service:1
           ports:
             - containerPort: 5000
 
